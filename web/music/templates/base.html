@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PULSE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-wrapper">
+        <aside class="sidebar">
+            <a href="{% url 'music:track_list' %}" class="logo">PULSE</a>
+
+            <form action="{% url 'music:track_list' %}" method="get" class="search-form">
+                <input type="text" name="q" placeholder="Поиск..." value="{{ request.GET.q }}">
+                <button type="submit">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                </button>
+            </form>
+            
+            <nav class="nav-group">
+                <a href="{% url 'music:track_list' %}" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                    <span>Главная</span>
+                </a>
+                <a href="{% url 'music:my_wave' %}" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+                    <span>Моя волна</span>
+                </a>
+                <a href="{% url 'basket:concert_list' %}" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 18H5V10h14v8zM12 4c-4.41 0-8 3.59-8 8v10h16v-10c0-4.41-3.59-8-8-8z"/></svg>
+                    <span>Афиша</span>
+                </a>
+                <a href="{% url 'music:collection_list' %}" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 21l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 2 7.5 2c1.74 0 3.41.81 4.5 2.09C13.09 2.81 14.76 2 16.5 2 19.58 2 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21z"/></svg>
+                    <span>Коллекции</span>
+                </a>
+                <a href="{% url 'music:playlist_list' %}" class="nav-item">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                    <span>Плейлисты</span>
+                </a>
+            </nav>
+
+            <nav class="nav-group">
+                <p class="nav-group-title">Аккаунт</p>
+                {% if user.is_authenticated %}
+                    <div class="nav-item active" style="cursor: default;">● {{ user.username }}</div>
+                    <a href="{% url 'music:playlist_create' %}" class="nav-item">➕ Создать плейлист</a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'music:track_create' %}" class="nav-item">⚡ Загрузить трек</a>
+                    {% endif %}
+                    <a href="{% url 'music:logout_page' %}" class="nav-item">🚪 Выйти</a>
+                {% else %}
+                    <a href="{% url 'music:login_page' %}" class="nav-item">🔑 Войти</a>
+                    <a href="{% url 'music:registration_page' %}" class="nav-item">📝 Регистрация</a>
+                {% endif %}
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="bottom-player">
+            <div class="player-track-info">
+                {% if track %}
+                    {% if track.cover %}
+                        <img src="{{ track.cover.url }}" class="player-img">
+                    {% else %}
+                        <div class="player-img" style="background:#222; display:flex; align-items:center; justify-content:center;">🎵</div>
+                    {% endif %}
+                    <div>
+                        <div class="card-title" style="margin:0">{{ track.title }}</div>
+                        <div class="card-author">{{ track.artist }}</div>
+                    </div>
+                {% else %}
+                    <div style="color: var(--text-muted)">Выберите трек</div>
+                {% endif %}
+            </div>
+
+            <div class="player-controls">
+                {% if track.audio_file %}
+                    <audio id="main-audio" controls autoplay style="width: 100%; max-width: 500px;">
+                        <source src="{{ track.audio_file.url }}" type="audio/mpeg">
+                    </audio>
+                {% endif %}
+            </div>
+
+            <div class="player-actions">
+                {% if track %}
+                    <a href="{% url 'music:like_track' track.pk %}" class="icon-btn {% if user in track.likes.all %}active-like{% endif %}">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 2 7.5 2c1.74 0 3.41.81 4.5 2.09C13.09 2.81 14.76 2 16.5 2 19.58 2 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </a>
+                    <a href="{% url 'music:dislike_track' track.pk %}" class="icon-btn">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
+                    </a>
+                    <button class="icon-btn" onclick="document.getElementById('lyrics-modal').classList.toggle('active')">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M14 17h7v2h-7zm0-4h7v2h-7zm0-4h7v2h-7zm-3 8l-4-4 4-4V7L5 12l6 5z"/></svg>
+                    </button>
+                {% endif %}
+            </div>
+        </footer>
+    </div>
+
+    <div id="lyrics-modal" class="lyrics-overlay" onclick="this.classList.toggle('active')">
+        <div class="lyrics-content" onclick="event.stopPropagation()">
+            <h2 style="color: var(--accent); margin-bottom: 20px;">Текст песни</h2>
+            <p style="white-space: pre-wrap; line-height: 1.8;">{{ track.lyrics|default:"У этого трека пока нет текста." }}</p>
+        </div>
+    </div>
+</body>
+</html>

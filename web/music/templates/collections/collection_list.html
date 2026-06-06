@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header class="page-header">
+    <h1 class="page-title">Твои подборки</h1>
+</header>
+
+<div class="music-grid">
+    {% for col in collections %}
+    <a href="{% url 'music:collection_detail' col.pk %}" class="music-card collection-card">
+        <div class="card-img-wrapper">
+            <div class="pulse-visual">
+                <div class="visual-item">
+                    {% if "волна" in col.name|lower %}
+                        <div class="visual-wave"><span></span><span></span><span></span></div>
+                    {% elif "топ" in col.name|lower %}
+                        <div class="visual-top"></div>
+                    {% elif "легенды" in col.name|lower %}
+                        <div class="visual-vinyl"><div class="visual-vinyl-center"></div></div>
+                    {% elif "вечер" in col.name|lower %}
+                        <div class="visual-night"></div>
+                    {% elif "спорт" in col.name|lower %}
+                        <div class="visual-bolt"></div>
+                    {% else %}
+                        <div class="visual-geo"></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-title">{{ col.name }}</div>
+        <div class="card-author" style="color: var(--accent);">{{ col.track_set.count }} треков</div>
+    </a>
+    {% empty %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 100px;">
+        <h2 style="color: var(--text-muted);">Коллекций пока нет</h2>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

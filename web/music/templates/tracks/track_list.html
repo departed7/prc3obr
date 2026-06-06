@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header class="page-header">
+    <h1 class="page-title">С добрым утром</h1>
+</header>
+
+<div class="music-grid">
+    {% for track in tracks %}
+    <a href="{% url 'music:track_detail' track.pk %}" class="music-card">
+        <div class="card-img-wrapper">
+            {% if track.cover %}
+                <img src="{{ track.cover.url }}" class="card-img">
+            {% else %}
+                <div class="card-img" style="background: #282828; display:flex; align-items:center; justify-content:center;">🎵</div>
+            {% endif %}
+            <div class="play-badge">
+                <span style="color: black; font-size: 24px;">▶</span>
+            </div>
+        </div>
+        <div class="card-title">{{ track.title }}</div>
+        <div class="card-author">{{ track.artist }}</div>
+    </a>
+    {% empty %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 100px;">
+        <h2 style="margin-bottom: 20px;">Здесь пока тишина</h2>
+        <a href="{% url 'music:track_create' %}" class="btn-accent">Загрузить первый трек</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

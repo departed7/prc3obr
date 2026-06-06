@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h1 class="page-title">{% if object %}Редактировать{% else %}Добавить новый трек{% endif %}</h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: var(--danger); font-size: 12px; margin-top: 5px;">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <div style="margin-top: 30px; display: flex; gap: 15px;">
+            <button type="submit" class="btn-accent">Сохранить</button>
+            <a href="{% url 'music:track_list' %}" class="btn-accent" style="background: #282828; color: white;">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}  

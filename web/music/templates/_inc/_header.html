@@ -1,0 +1,10 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="{% url 'music:track_list' %}" class="logo">MUSIC STREAM</a>
+        <div class="nav-links">
+            <a href="{% url 'music:track_list' %}">Главная</a>
+            <a href="{% url 'music:playlist_list' %}">Плейлисты</a>
+            <a href="{% url 'music:track_create' %}" class="btn btn-primary">Загрузить</a>
+        </div>
+    </div>
+</nav>

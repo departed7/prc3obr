@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="hero-section {% if track.vibe_video %}has-video{% endif %}">
+    {% if track.vibe_video %}
+        <video autoplay muted loop playsinline class="vibe-background">
+            <source src="{{ track.vibe_video.url }}" type="video/mp4">
+        </video>
+    {% endif %}
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <div class="hero-img-container">
+            {% if track.cover %}
+                <img src="{{ track.cover.url }}" class="hero-img">
+            {% else %}
+                <div class="hero-img-placeholder">🎵</div>
+            {% endif %}
+        </div>
+
+        <div class="hero-text">
+            <p class="hero-subtitle">{% if is_wave %}МОЯ ВОЛНА{% else %}ТРЕК{% endif %}</p>
+            <h1 class="hero-title">{{ track.title }}</h1>
+            <div class="hero-meta">
+                <span class="hero-artist">{{ track.artist }}</span>
+                <span class="hero-dot">•</span>
+                <span class="hero-info">{{ track.category.name|default:"СИНГЛ" }}</span>
+                <span class="hero-dot">•</span>
+                <span class="hero-info">{{ track.duration }} сек.</span>
+            </div>
+            
+            <div class="hero-actions">
+                <a href="{% url 'music:like_track' track.pk %}" class="btn-pulse {% if user in track.likes.all %}active-like{% endif %}">
+                    {% if user in track.likes.all %}Лайкнуто{% else %}Нравится{% endif %}
+                </a>
+                {% if user.is_staff %}
+                    <a href="{% url 'music:track_update' track.pk %}" class="btn-pulse btn-white">Редактировать</a>
+                {% endif %}
+                {% if is_wave %}
+                    <a href="{% url 'music:my_wave' %}" class="btn-pulse btn-dark">Следующий</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="lyrics-section">
+    <h3 class="lyrics-title">Текст песни</h3>
+    <div class="lyrics-box">
+        {% if track.lyrics and track.lyrics != "None" %}
+            {{ track.lyrics|linebreaks }}
+        {% else %}
+            <p style="opacity: 0.5;">У этого трека еще нет текста.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

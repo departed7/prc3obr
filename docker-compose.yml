@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:16
+    container_name: pulse_db
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${DB_NAME_PGSQL}
+      POSTGRES_USER: ${DB_USERNAME_PGSQL}
+      POSTGRES_PASSWORD: ${DB_PASSWORD_PGSQL}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - pulse_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME_PGSQL} -d ${DB_NAME_PGSQL}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: ./web
+    container_name: pulse_app
+    restart: always
+    command: /app/entrypoint.sh
+    env_file: .env
+    volumes:
+      - static_volume:/app/productionfiles/
+      - media_volume:/app/media/
+    networks:
+      - pulse_net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.25
+    container_name: pulse_nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_volume:/app/productionfiles/:ro
+      - media_volume:/app/media/:ro
+    networks:
+      - pulse_net
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+
+networks:
+  pulse_net:

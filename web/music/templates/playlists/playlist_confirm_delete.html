@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container" style="text-align: center;">
+    <h1 style="margin-bottom: 1rem;">Удаление плейлиста</h1>
+    <p style="margin-bottom: 1rem;">Вы уверены, что хотите удалить плейлист <strong>"{{ playlist.name }}"</strong>?</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="btn-group">
+            <button type="submit" class="btn btn-danger">Да, удалить</button>
+            <a href="{% url 'music:playlist_list' %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

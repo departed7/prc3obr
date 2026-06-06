@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="page-title">Афиша событий</h1>
+
+<div class="concert-grid">
+    {% for concert in concerts %}
+    <div class="concert-card">
+        {% if concert.poster %}
+            <img src="{{ concert.poster.url }}">
+        {% else %}
+            <div style="width:100%; height:100%; background:#222; display:flex; align-items:center; justify-content:center; font-size:50px;">🎟</div>
+        {% endif %}
+        
+        <div class="concert-overlay">
+            <div class="concert-date">{{ concert.date|date:"d M, H:i" }}</div>
+            <div class="concert-artist" style="font-size: 32px; font-weight: 900;">{{ concert.artist }}</div>
+            <div class="concert-city" style="color: var(--text-muted); margin-bottom: 15px;">{{ concert.city }} • {{ concert.venue }}</div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 900; font-size: 20px;">от {{ concert.price }} ₽</span>
+                <form action="{% url 'basket:basket_add' concert.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-pulse" style="padding: 10px 20px; font-size: 14px; width: auto;">Купить билет</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p style="text-align: center; color: var(--text-muted);">Событий пока нет. Загляните позже!</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="page-title">Мои билеты</h1>
+
+<div class="form-container" style="max-width: 1000px;">
+    {% if basket %}
+        <table style="width: 100%; border-collapse: collapse; color: #fff;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--glass-border); text-align: left;">
+                    <th style="padding: 20px;">Событие</th>
+                    <th style="padding: 20px;">Количество</th>
+                    <th style="padding: 20px;">Цена</th>
+                    <th style="padding: 20px;">Итого</th>
+                    <th style="padding: 20px;">Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in basket %}
+                    {% with concert=item.concert %}
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <td style="padding: 20px;">
+                            <div style="font-weight: 800;">{{ concert.artist }}</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">{{ concert.city }}, {{ concert.venue }}</div>
+                        </td>
+                        <td style="padding: 20px;">{{ item.count }} шт.</td>
+                        <td style="padding: 20px;">{{ item.price }} ₽</td>
+                        <td style="padding: 20px; color: var(--accent); font-weight: 900;">{{ item.total_price }} ₽</td>
+                        <td style="padding: 20px;">
+                            <a href="{% url 'basket:basket_remove' concert.id %}" style="color: var(--danger); text-decoration: none; font-weight: 700;">Удалить</a>
+                        </td>
+                    </tr>
+                    {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div style="margin-top: 40px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 24px; font-weight: 900;">
+                К ОПЛАТЕ: <span style="color: var(--accent);">{{ basket.get_total_price }} ₽</span>
+            </div>
+            <a href="{% url 'basket:basket_checkout' %}" class="btn-pulse">Оформить заказ</a>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px;">
+            <h2 style="color: var(--text-muted);">Вы еще не выбрали ни одного билета</h2>
+            <a href="{% url 'basket:concert_list' %}" class="btn-pulse" style="margin-top: 20px;">Перейти к афише</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

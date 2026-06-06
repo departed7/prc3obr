@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header class="hero-section">
+    <div class="hero-overlay" style="background: linear-gradient(to top, #000 0%, rgba(255, 238, 0, 0.1) 100%);"></div>
+    
+    <div class="hero-content">
+        <!-- Контейнер для иконки, такой же как в списке, но больше -->
+        <div class="hero-img-container">
+            <div class="pulse-visual" style="transform: scale(1.8);">
+                <div class="visual-item">
+                    {% if "волна" in collection.name|lower %}
+                        <div class="visual-wave"><span></span><span></span><span></span></div>
+                    {% elif "топ" in collection.name|lower %}
+                        <div class="visual-top"></div>
+                    {% elif "легенды" in collection.name|lower %}
+                        <div class="visual-vinyl"><div class="visual-vinyl-center"></div></div>
+                    {% elif "вечер" in collection.name|lower %}
+                        <div class="visual-night"></div>
+                    {% elif "спорт" in collection.name|lower %}
+                        <div class="visual-bolt"></div>
+                    {% else %}
+                        <div class="visual-geo"></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-text">
+            <p class="hero-subtitle">ПОДБОРКА PULSE</p>
+            <h1 class="hero-title">{{ collection.name }}</h1>
+            <div class="hero-meta">
+                <span style="color: var(--text-muted); font-size: 16px;">{{ collection.description|default:"Авторская подборка треков" }}</span>
+                <span style="color: var(--accent); margin-left: 10px;">{{ collection.track_set.count }} треков</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="music-grid">
+    {% for track in tracks %}
+    <a href="{% url 'music:track_detail' track.pk %}" class="music-card">
+        <div class="card-img-wrapper">
+            {% if track.cover %}
+                <img src="{{ track.cover.url }}" class="card-img">
+            {% else %}
+                <div class="card-img" style="background: #181818; display:flex; align-items:center; justify-content:center; font-size:40px;">🎵</div>
+            {% endif %}
+        </div>
+        <div class="card-title">{{ track.title }}</div>
+        <div class="card-author">{{ track.artist }}</div>
+    </a>
+    {% empty %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 100px; opacity: 0.5;">
+        <h2>В этой коллекции еще нет треков</h2>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

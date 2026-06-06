@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="page-title">Мои плейлисты</h1>
+<div class="music-grid">
+    {% for playlist in playlists %}
+    <a href="{% url 'music:playlist_detail' playlist.pk %}" class="music-card">
+        <div class="card-img-wrapper">
+            {% if playlist.cover %}
+                <img src="{{ playlist.cover.url }}" class="card-img">
+            {% else %}
+                <div class="card-img" style="background: #222; display: flex; align-items: center; justify-content: center; font-size: 40px;">💿</div>
+            {% endif %}
+        </div>
+        <div class="card-title">{{ playlist.name }}</div>
+        <div class="card-author">Создатель: {{ playlist.user.username }}</div>
+        <div class="card-author" style="color: var(--accent); font-weight: 800; margin-top: 5px;">{{ playlist.get_track_count_text }}</div>
+    </a>
+    {% empty %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 100px;">
+        <h2 style="color: var(--text-muted);">Плейлистов пока нет</h2>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
