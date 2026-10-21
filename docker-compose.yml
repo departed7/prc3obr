@@ -48,10 +48,41 @@ services:
     depends_on:
       - web
 
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: pulse_prometheus
+    restart: always
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - pulse_net
+
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: pulse_grafana
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-polystat-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3001:3000"
+    networks:
+      - pulse_net
+    depends_on:
+      - prometheus
+
 volumes:
   postgres_data:
   static_volume:
   media_volume:
+  prometheus_data:
+  grafana_data:
 
 networks:
   pulse_net:
